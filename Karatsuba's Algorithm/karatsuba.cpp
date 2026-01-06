@@ -32,14 +32,14 @@ long long karatsuba(long long num1, long long num2) {
     // --------------------------- //
     // 3 recursive multiplications //
     // --------------------------- //
-    int z0 = karatsuba(a,c);
-    int z1 = karatsuba(b,d);
-    int z2 = karatsuba(a+b, c+d);
+    int X = karatsuba(a,c);
+    int Y = karatsuba(b,d);
+    int Z = karatsuba(a+b, c+d) - z1 - z0;
 
     // ------------ //
     // Final result //
     // ------------ //
-    return z2*p*p + (z1-z2-z0)*p + z0; 
+    return X*p*p + Z*p + Y;
 }
 
 ///////////////////
