@@ -34,7 +34,7 @@ long long karatsuba(long long num1, long long num2) {
     // --------------------------- //
     int X = karatsuba(a,c);
     int Y = karatsuba(b,d);
-    int Z = karatsuba(a+b, c+d) - z1 - z0;
+    int Z = karatsuba(a+b, c+d)-X-Y;
 
     // ------------ //
     // Final result //
