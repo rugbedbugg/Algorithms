@@ -7,7 +7,7 @@ using namespace std;
 ///////////////////////
 /// Cross sum logic ///
 ///////////////////////
-int getMaxCrossSum(const vector<int>& arr, int low, int mid, int high) {
+long long getMaxCrossSum(const vector<int>& arr, int low, int mid, int high) {
 	// --- Initialize sum --------- // 
 	long long sum = 0;
 
@@ -30,7 +30,7 @@ int getMaxCrossSum(const vector<int>& arr, int low, int mid, int high) {
 	// cout << rightSide << endl;
 	// cout << leftSide+rightSide << endl << endl;
 	
-	return (int)(leftSide + rightSide);
+	return leftSide + rightSide;
 }
 ///////////////////
 /// Propagation ///
@@ -45,11 +45,15 @@ int getMaxSubarraySum(const vector<int>& arr, int low, int high) {
 	// --- CASE 1: Left subarray sum is largest ---- //
 	// --- CASE 2: Right subarray sum is largest --- //
 	// --- CASE 3: Cross subarray sum is largest --- //
-	return max({
-		getMaxSubarraySum(arr, low, mid),
-		getMaxSubarraySum(arr, mid+1, high),
-		getMaxCrossSum(arr, low, mid, high)
-	});
+	int leftSum = getMaxSubarraySum(arr, low, mid);
+	int rightSum = getMaxSubarraySum(arr, mid+1, high);
+	int crossSum = (int) getMaxCrossSum(arr, low, mid, high);
+	
+	// --- Find Max sub-array sum value --- // 
+	int maxSum = max(leftSum, rightSum);
+	maxSum = max(maxSum, crossSum);
+
+	return maxSum;
 }
 /////////////////
 /// Intiation ///
