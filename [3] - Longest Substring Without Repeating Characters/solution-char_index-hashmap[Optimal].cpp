@@ -14,7 +14,7 @@ int lengthOfLongestSubstring(string s) {
 	for (int right=0; right<s.length(); right++) {	
 		// --- If duplicate, shrink substring -------- //
 		// --- abcdefc -> defc -- //
-		while (prevIndex.count([s[right]]) && left <= prevIndex[s[right]]) {
+		while (prevIndex.count(s[right]) && left <= prevIndex[s[right]]) {
 			left = prevIndex[s[right]] + 1;
 		}
 		// --- Add the new character to substring ------- //
