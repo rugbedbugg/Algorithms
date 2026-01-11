@@ -1,16 +1,20 @@
 // 217. Contains Duplicate
 #include <iostream>
 #include <vector>
-#include <unordered_map>
+#include <unordered_set>
 using namespace std;
 
 
 bool containsDuplicate(vector<int>& nums) {
-        unordered_map<int, int> seenElements;
+        unordered_set<int> seenElements;
 
-	for (int num: nums) seenElements[num]++;
 	for (int num: nums) {
-		if (seenElements[num]>1) return true;
+		// Check if element is present
+		// If yes, exit early
+		if (seenElements.count(num)) return true;
+		
+		// If reaches here, insert element
+		seenElements.insert(num);
 	}
 
 	return false;
