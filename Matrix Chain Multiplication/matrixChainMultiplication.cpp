@@ -10,11 +10,10 @@ using namespace std;
 void printOptimalParenthesization(
 		const vector<vector<int>>& split,
 		int i, int j) {
-	// ------------------------- //
-	// --- Print matrix name --- //
-	// ------------------------- //
-	if (i==j) {
-		cout << "A" << j;
+	// -------------------------- //
+	// --- Print matrix names --- //
+	// -------------------------- //
+	if (i==j) { cout << "A" << i;
 		return;
 	}
 	// ------------------------- //
@@ -42,60 +41,65 @@ void printOptimalParenthesization(
 //       - split location 1: b/w i=1 & i=2
 //       - split location 2: b/w i=3 & i=4
 int matrixChainMultiply(
-		const vector<int>& d,
+		const vector<int>& dims,
 		vector<vector<int>>& split) {
-	// ------------------------------------------------------ //
-	// --- Represents number of matrices to be multiplied --- //
-	int n = d.size()-1;
+	// ------------------------------------------------------------ //
+	// --- Represents number of matrices to be multiplied --------- //
+	// ------------------------------------------------------------ //
+	int n = dims.size() - 1;
 
 
-	// --- Initialising split & dp arrays --- //
+	// --- Initialising split & multRes arrays --- //
 	// --- 1. split[i][j] = k
 	//        - k lies b/w  i & j
 	//        - denotes where parenthesization split takes place
 	//        - .. (Ai .. Ak)(Ak+1 .. Aj) ..
-	// --- 2. dp[i][j] = no. of mult. reqd. for Ai*A(i+1)...Aj
-	// --- 3. cost = same as above but is a generalised variable
-	// -------------------------------------- // 
-	split.assign(n+1, vector<int>(n+1, 0));		 	// replacing previous content with 0-matrix of (n+1)*(n+1)
-	vector<vector<int>> dp(n+1, vector<int>(n+1, 0));	// Defining 'cost' (aka dp) 0-matrix of (n+1)*(n+1)
-	
+	// --- 2. multReqd[i][j] = no. of mult. reqd. for Ai*A(i+1)...Aj
+	// --- 3. multReqd_partial = same as above but is a generalised variable
+	// --------------------------------------------------------------------- // 
+	vector<vector<int>> multReqd(n, vector<int>(n, 0));		         // 0-matrix of n*n
+	split.assign(n, vector<int>(n, 0));		 		         // replace w/ 0-matrix of n*n
 
-	// -------------------------------------------------------------- //
-	// --- length = no. of matrices present in smallest Sub-chain --- //
+	// --------------------------------------------------------------------- //
+	// --- gap = no. of matrices present in smallest Sub-chain ------------- //
 	//     Ex:- abc = a(bc)
-	for (int length=2; length<=n; length++) {
-	for (int i=1; i<=n-length+1; i++) {
-		// --- 
-		int j = i+length-1;
-		dp[i][j] = INT_MAX;			 	// Assuming no. of mult. reqd. to compute Ai*A(i+1)...Aj to be very high
-								// Such that it covers the highest possible as well
-	
-		for (int k=i; k<j; k++) {
-			int cost = dp[i][k]		 	// no. of mult. reqd. to compute 'Sub-chain #1'
-				 + dp[k+1][j]		 	// no. of mult. reqd. to compute 'Sub-chain #2'
-				 + d[i-1] * d[k] * d[j]; 	// no. of mult. reqd. to compute (Sub-chain #1)*(Sub-chains #2)
+	for (int gap=1; gap < n; gap++) {
+	for (int start=0; start < n; start++) {
+		int end = start + gap;
+		if (end >= n) break;
 
-			// --- Check if current cost is greater/lesser than current cost --- //
-			if (cost < dp[i][j]) {
-				dp[i][j] = cost;
-				split[i][j] = k;
+		// --- Assuming no. of mult. reqd. to compute Ai*A(i+1)...Aj to be very high
+		// --- Such that it covers the highest possible as well
+		multReqd[start][end] = INT_MAX;
+
+		// --- 'k' is always between 'start' & 'end'
+		for (int k=start; k<end; k++) {
+			int multReqd_partial = 
+					multReqd[start][k]			// no. of mult. reqd. to compute 'Sub-chain #1'
+				 	+ multReqd[k+1][end]			// no. of mult. reqd. to compute 'Sub-chain #2'
+				 	+ dims[start]*dims[k+1]*dims[end+1];	// no. of mult. reqd. to compute (Sub-chain #1)*(Sub-chain #2)
+
+			// --- Choose matrix grouping with least no. of mult. reqd. to compute --- //
+			if (multReqd_partial < multReqd[start][end]) {
+				multReqd[start][end] = multReqd_partial;
+				split[start][end] = k;
 			}
 		}
 	}}
+	int minMultReqd_chain = multReqd[0][n-1];
 
-	return dp[1][n];
+	return minMultReqd_chain;
 }
 
 int main() {
-	vector<int> d = {10, 30, 5, 60};
+	vector<int> dims = {10, 30, 5, 60};
 	vector<vector<int>> split;
 
-	int minCost = matrixChainMultiply(d, split);
+	int minCost = matrixChainMultiply(dims, split);
 
 	cout << "Minimum cost: " << minCost << endl; 
 	cout << "Optimal parenthesization: ";
-	printOptimalParenthesization(split, 1, d.size()-1);
+	printOptimalParenthesization(split, 0, dims.size()-2);
 	cout << endl;
 
 	return 0;
